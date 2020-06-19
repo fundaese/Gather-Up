@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CallActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/info"
+        android:textColor="#2c3e50"
+        android:textSize="22dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        >
+
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:onClick="connect"
+            android:layout_toLeftOf="@id/btn_change"
+            android:text="CALL"
+            />
+
+        <Button
+            android:id="@+id/btn_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_toLeftOf="@id/btn_disconnect"
+            android:text="Change Camera"
+            android:visibility="gone"
+            />
+
+        <Button
+            android:id="@+id/btn_disconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="40dp"
+            android:onClick="Disconnect"
+            android:text="Disconnect"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/videoFrame"
+        android:layout_width="match_parent"
+        android:layout_height="600dp">
+    </FrameLayout>
+
+</RelativeLayout>
