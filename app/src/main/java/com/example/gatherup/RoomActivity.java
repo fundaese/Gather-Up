@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -124,8 +125,9 @@ public class RoomActivity extends AppCompatActivity {
 
     public void sendRoomNameToCallScreen(View view)
     {
-        Intent intent1 = new Intent(getApplicationContext(), CallActivity.class);
-        intent1.putExtra("roomName","" + roomName.getText());
-        startActivity(intent1);
+        Intent intent = new Intent(getApplicationContext(), CallActivity.class);
+        intent.putExtra("roomName","" + roomName.getText());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

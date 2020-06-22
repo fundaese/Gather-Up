@@ -17,17 +17,12 @@
         android:layout_height="match_parent">
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/tv"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/info"
-        android:textColor="#2c3e50"
-        android:textSize="22dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        />
-
+        android:layout_height="match_parent"
+        android:src="@drawable/download"
+ />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"

@@ -19,6 +19,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,11 +28,12 @@ import com.vidyo.VidyoClient.Connector.ConnectorPkg;
 
 public class CallActivity extends AppCompatActivity implements Connector.IConnect {
 
+    private final String host = "prod.vidyo.io";
     private Connector connector = null;
     private FrameLayout videoFrame;
     private Button startButton, changeButton, disconnectButton;
-    private TextView tv;
     private Toolbar toolbar;
+    private ImageView image;
     private String roomName;
     private String mToken = "";
     private View view;
@@ -47,6 +49,7 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         view = getWindow().getDecorView().getRootView();
         initiateUIComponents();
 
+
         roomName = getRoomName();
 
         ConnectorPkg.setApplicationUIContext(this);
@@ -61,9 +64,9 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
             public void onClick(View v) {
                 connect();
                 startButton.setVisibility(View.GONE);
+                image.setVisibility(View.GONE);
                 changeButton.setVisibility(View.VISIBLE);
                 disconnectButton.setVisibility(View.VISIBLE);
-                tv.setVisibility(View.GONE);
             }
         });
 
@@ -127,16 +130,17 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
             mToken = Generate.generateToken("c7963f54d2d7471ba435cfa562aa0312","c9a9fa.vidyo.io","funda",  "10000");
         }
 
-        connector.connect("prod.vidyo.io", mToken, ".", "" + roomName , this);
+        connector.connect(host, mToken, ".", "" + roomName , this);
         showAlertDialogWithAutoDismiss();
     }
 
     private void disConnect() {
         connector.disconnect();
         connector.disable();
+        Intent intent = new Intent(getApplicationContext(),RoomActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
 
-        Intent intent2 = new Intent(getApplicationContext(),RoomActivity.class);
-        startActivity(intent2);
     }
 
 
@@ -251,7 +255,8 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         disconnectButton = findViewById(R.id.btn_disconnect);
         toolbar = findViewById(R.id.toolbar);
         myLayout = findViewById(R.id.myLayout);
-        tv = findViewById(R.id.tv);
+        image = findViewById(R.id.image);
+
 
         toolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(toolbar);
