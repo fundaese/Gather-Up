@@ -3,14 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CallActivity">
+    tools:context=".CallActivity"
+    android:id="@+id/myLayout">
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"
         />
 
+    <FrameLayout
+        android:id="@+id/videoFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </FrameLayout>
+
     <TextView
+        android:id="@+id/tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/info"
@@ -29,43 +37,38 @@
 
         <Button
             android:id="@+id/btn_start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:onClick="connect"
             android:layout_toLeftOf="@id/btn_change"
-            android:text="CALL"
+            android:background="@drawable/btn_video"
+            android:layout_margin="10dp"
             />
 
         <Button
             android:id="@+id/btn_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerInParent="true"
             android:layout_toLeftOf="@id/btn_disconnect"
-            android:text="Change Camera"
+            android:background="@drawable/btn_switch"
+            android:layout_margin="10dp"
             android:visibility="gone"
             />
 
         <Button
             android:id="@+id/btn_disconnect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginRight="40dp"
-            android:onClick="Disconnect"
-            android:text="Disconnect"
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_disconnect"
             android:visibility="gone"
             />
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/videoFrame"
-        android:layout_width="match_parent"
-        android:layout_height="600dp">
-    </FrameLayout>
 
 </RelativeLayout>

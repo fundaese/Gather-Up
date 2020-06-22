@@ -1,54 +1,43 @@
 package com.example.gatherup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.vidyo.VidyoClient.Connector.Connector;
 import com.vidyo.VidyoClient.Connector.ConnectorPkg;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class CallActivity extends AppCompatActivity implements Connector.IConnect {
 
-    private Connector connector;
+    private Connector connector = null;
     private FrameLayout videoFrame;
     private Button startButton, changeButton, disconnectButton;
+    private TextView tv;
     private Toolbar toolbar;
     private String roomName;
-    private String mToken;
-
+    private String mToken = "";
     private View view;
+    RelativeLayout myLayout;
 
-    //Runtime Permissions
-    private String[] PERMISSIONS = { android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO };
-    private PermissionUtility mPermissions;
-    private MyNetworkReceiver mNetworkReceiver;
+    private static final int MY_CAMERA_REQUEST_CODE = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +52,9 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         ConnectorPkg.setApplicationUIContext(this);
         ConnectorPkg.initialize();
 
-        mNetworkReceiver = new MyNetworkReceiver(this);
-        mPermissions = new PermissionUtility(this, PERMISSIONS); //Runtime permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.RECORD_AUDIO},MY_CAMERA_REQUEST_CODE);
 
-        //getVidyoToken();
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +63,7 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
                 startButton.setVisibility(View.GONE);
                 changeButton.setVisibility(View.VISIBLE);
                 disconnectButton.setVisibility(View.VISIBLE);
+                tv.setVisibility(View.GONE);
             }
         });
 
@@ -88,17 +77,10 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         disconnectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Disconnect();
+                disConnect();
             }
         });
 
-        //Runtime Permissions
-        if(mPermissions.arePermissionsEnabled()){
-            vidyoStart();
-            Log.d("TAG", "Permission granted 1");
-        } else {
-            mPermissions.requestMultiplePermissions();
-        }
     }
 
 
@@ -115,7 +97,7 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
 
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "My Gather Up! Video room name is: " + roomName + "     Also you can click link: https://gatherupvideo.xyz/vidyo.html?room=" + roomName +"");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "My Gather Up! Video room name is: " + roomName + "");
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent,""));
                 break;
@@ -123,98 +105,95 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         return super.onOptionsItemSelected(item);
     }
 
-    //Runtime permissions
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(mPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-            vidyoStart();
-            Log.d("TAG", "Permission granted 2");
-        }
-    }
-
-    //===============================================| onPause(), onResume(), onStop()
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         try {
-            unregisterReceiver(mNetworkReceiver);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void vidyoStart() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                connector = new Connector(videoFrame, Connector.ConnectorViewStyle.VIDYO_CONNECTORVIEWSTYLE_Default, 2, "warning info@VidyoClient info@VidyoConnector", "", 0);
-                connector.showViewAt(videoFrame, 0, 0, videoFrame.getWidth(), videoFrame.getHeight());
-            }
-        }, 3000);
-    }
-
     public void connect() {
-        connector = new Connector(videoFrame, Connector.ConnectorViewStyle.VIDYO_CONNECTORVIEWSTYLE_Default, 16, "", "", 0);
+        connector = new Connector(videoFrame, Connector.ConnectorViewStyle.VIDYO_CONNECTORVIEWSTYLE_Default, 15, "warning info@VidyoConnector info@VidyoClient", "", 0);
         connector.showViewAt(videoFrame,0 ,0,videoFrame.getWidth(),videoFrame.getHeight());
-        mToken = "cHJvdmlzaW9uAGZ1bmRhZXNlQGNvbS5leGFtcGxlLmdhdGhlcnVwADYzNzU5ODI3OTU2AAAzOTUzZjUzYzNiZDQ3ZGFiMjY5YjFmMDI1MDIwZjg4MmI4NDBhYzkzZDQ4YTljMmUyNmI4YTRkMjVjNzE5ZmJmYjlkYjc1OGY0ZjYxMjJlZTAxZDI4NWQ1MDg2YjI4NjY=";
-        connector.connect("prod.vidyo.io", mToken, ".", "roomName", this);
+
+        if(mToken.isEmpty()){
+            mToken = Generate.generateToken("c7963f54d2d7471ba435cfa562aa0312","c9a9fa.vidyo.io","funda",  "10000");
+        }
+
+        connector.connect("prod.vidyo.io", mToken, ".", "" + roomName , this);
         showAlertDialogWithAutoDismiss();
     }
 
-    private void Disconnect() {
+    private void disConnect() {
         connector.disconnect();
         connector.disable();
-        Intent intent1 = new Intent(getApplicationContext(),RoomActivity.class);
-        startActivity(intent1);
+
+        Intent intent2 = new Intent(getApplicationContext(),RoomActivity.class);
+        startActivity(intent2);
     }
 
 
     @Override
     public void onSuccess() {
         //TODO(motionEvent ekle view setlendi)
+
+        Log.i("Call: ","Success");
+        Log.i("mToken: ",mToken);
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_CANCEL:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        v.performClick();
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                changeButton.setVisibility(View.GONE);
+                                disconnectButton.setVisibility(View.GONE);
+                            }
+                        }, 5000);
+                        break;
+                    case MotionEvent.ACTION_DOWN:
+                        changeButton.setVisibility(View.VISIBLE);
+                        disconnectButton.setVisibility(View.VISIBLE);
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     @Override
     public void onFailure(Connector.ConnectorFailReason connectorFailReason) {
         Log.i("CallActivity","something went wrong: "+ connectorFailReason.toString());
-      //  Toast.makeText(getApplicationContext(),"something went wrong: "+ connectorFailReason.toString(),Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(getApplicationContext(),"something went wrong: "+ connectorFailReason.toString(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDisconnected(Connector.ConnectorDisconnectReason connectorDisconnectReason) {
         //TODO("DISCONNECT OLUNCA BURASI CALISIR")
+        Log.i("Disconnect: ","Disconnect OK!");
+        Log.i("CallActivity","Disconnect: "+ connectorDisconnectReason.toString());
     }
 
-    public void getVidyoToken() {
-        String url = "https://us-central1-vidyoio.cloudfunctions.net/getVidyoToken";
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    mToken = jsonObject.getString("token");
-                    Log.d("token", mToken);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.e("TAG", e.getMessage());
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("TAG", error.getMessage());
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
     }
+
+
 
     private void showAlertDialogWithAutoDismiss() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -271,6 +250,8 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         changeButton = findViewById(R.id.btn_change);
         disconnectButton = findViewById(R.id.btn_disconnect);
         toolbar = findViewById(R.id.toolbar);
+        myLayout = findViewById(R.id.myLayout);
+        tv = findViewById(R.id.tv);
 
         toolbar.setTitle(getResources().getString(R.string.app_name));
         setSupportActionBar(toolbar);
