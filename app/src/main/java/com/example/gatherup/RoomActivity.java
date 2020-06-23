@@ -13,11 +13,13 @@ import android.telecom.Call;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -43,6 +45,8 @@ public class RoomActivity extends AppCompatActivity {
         videoView.setVideoURI(uri);
         videoView.start();
 
+        roomName.getText().toString().toLowerCase();
+
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -53,15 +57,31 @@ public class RoomActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(roomName.length() == 0){
-                    roomName.setError("Please,enter room name!");
-                } else{
-                    btnLogin.setEnabled(false);
-                    progressBar.setVisibility(View.VISIBLE);
-                    sendRoomNameToCallScreen(v);
-                }
+                roomNameControl();
             }
         });
+
+        roomName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)) {
+                    roomNameControl();
+                }
+                return false;
+            }
+        });
+    }
+
+    private void roomNameControl(){
+        if(roomName.length() == 0){
+            roomName.setError("Please,enter room name!");
+        } else if(roomName.getText().toString().length() < 5){
+            roomName.setError("Room name can not be less than 5 letters");
+        }else{
+            btnLogin.setEnabled(false);
+            progressBar.setVisibility(View.VISIBLE);
+            sendRoomNameToCallScreen();
+        }
     }
 
     @Override
@@ -79,7 +99,7 @@ public class RoomActivity extends AppCompatActivity {
         {
             try{
                 AlertDialog.Builder alertDialogBuilder=new AlertDialog.Builder(this);
-                alertDialogBuilder.setTitle("Do you want to really close Octopus Video?").setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setTitle("Do you want to really close Gather UP?").setCancelable(false).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -123,7 +143,7 @@ public class RoomActivity extends AppCompatActivity {
         videoView.start();
     }
 
-    public void sendRoomNameToCallScreen(View view)
+    public void sendRoomNameToCallScreen()
     {
         Intent intent = new Intent(getApplicationContext(), CallActivity.class);
         intent.putExtra("roomName","" + roomName.getText());

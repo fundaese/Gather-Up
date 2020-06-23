@@ -39,6 +39,24 @@ public class MainActivity extends AppCompatActivity {
         sliderAdapter = new SliderAdapter(this);
         mSlideViewPager.setAdapter(sliderAdapter);
 
+        showSlider();
+
+        /*
+        SharedPreferences sharedPreferences = getSharedPreferences("prefs",MODE_PRIVATE);
+        boolean firstStart = sharedPreferences.getBoolean("firstStart",true);
+
+        if(firstStart){
+             showSlider();
+        }else{
+            Intent roomPage = new Intent(MainActivity.this,RoomActivity.class);
+            roomPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(roomPage);
+        }*/
+
+
+    }
+
+    public void showSlider(){
         addDotsIndicator(0);
         mSlideViewPager.addOnPageChangeListener(viewListener);
 
@@ -55,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
                 mSlideViewPager.setCurrentItem(mCurrentPage - 1);
             }
         });
+
+
+       /* SharedPreferences sharedPreferences = getSharedPreferences("prefs",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("firstStart",false);
+        editor.apply(); */
     }
 
     public void addDotsIndicator(int position){
@@ -108,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         if(isOpenAlready()){
-                            Intent loginPage = new Intent(MainActivity.this,RoomActivity.class);
-                            loginPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(loginPage);
+                            Intent roomPage = new Intent(MainActivity.this,RoomActivity.class);
+                            roomPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK| Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(roomPage);
                         }else{
                             SharedPreferences.Editor editor = getSharedPreferences("slide",MODE_PRIVATE).edit();
                             editor.putBoolean("slide",true);

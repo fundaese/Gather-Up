@@ -127,7 +127,7 @@ public class CallActivity extends AppCompatActivity implements Connector.IConnec
         connector.showViewAt(videoFrame,0 ,0,videoFrame.getWidth(),videoFrame.getHeight());
 
         if(mToken.isEmpty()){
-            mToken = Generate.generateToken("c7963f54d2d7471ba435cfa562aa0312","c9a9fa.vidyo.io","funda",  "10000");
+            mToken = GenerateToken.generateProvisionToken("c7963f54d2d7471ba435cfa562aa0312", "funda" + "@" + "c9a9fa.vidyo.io", "10000", "");
         }
 
         connector.connect(host, mToken, ".", "" + roomName , this);

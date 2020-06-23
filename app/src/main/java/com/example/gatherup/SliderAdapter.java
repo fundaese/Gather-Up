@@ -27,7 +27,7 @@ public class SliderAdapter extends PagerAdapter {
     };
 
     public String[] slide_headings = {
-            "WELCOME TO FACE to FACES",
+            "WELCOME TO GATHER UP!",
             "SHARE WITH YOUR FRIENDS",
             "NOW YOU ARE READY!"
     };

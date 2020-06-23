@@ -5,10 +5,10 @@
             android:shape="rectangle">
             <size android:height="70dp" android:width="70dp"/>
             <corners android:radius="40dp"/>
-            <solid android:color="#503498db"/>
+            <solid android:color="#FFF"/>
 
         </shape>
     </item>
-    <item android:drawable="@drawable/swap"/>
+    <item android:drawable="@drawable/ic_baseline_swap_horiz_24"/>
 
 </layer-list>
